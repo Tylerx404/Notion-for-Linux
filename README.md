@@ -117,7 +117,9 @@ src/
   main/       Electron main process (window, state, deep links)
   preload/    Isolated preload (no Node APIs exposed)
   shared/     Shared config and constants
-assets/       Application icon (icon.png)
+assets/
+  icon.png    Window icon (512×512)
+  icons/      Linux hicolor set (16…1024) for deb/rpm/AppImage
 scripts/      Version sync / tag helpers
 VERSION       Release version source of truth
 ```
@@ -138,7 +140,14 @@ notion-for-linux-<version>-amd64.deb
 notion-for-linux-<version>-x86_64.rpm
 ```
 
-The app icon used for the window and packages is [`assets/icon.png`](assets/icon.png).
+Icons are committed under [`assets/`](assets/):
+
+| Path | Used for |
+|------|----------|
+| [`assets/icon.png`](assets/icon.png) | BrowserWindow / runtime (packaged into the app) |
+| [`assets/icons/*.png`](assets/icons/) | Linux package install (`/usr/share/icons/hicolor/<size>/apps/`) |
+
+Files in `assets/icons/` must be named `NxN.png` at standard sizes (`16x16` … `1024x1024`) so desktop environments can resolve the launcher icon. No generate step is required in CI.
 
 ---
 

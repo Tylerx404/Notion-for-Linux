@@ -43,7 +43,7 @@
         "deb",
         "rpm"
       ],
-      "icon": "assets/icon.png",
+      "icon": "assets/icons",
       "category": "Office",
       "executableName": "notion-for-linux",
       "syncDesktopName": true,

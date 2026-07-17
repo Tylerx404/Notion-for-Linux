@@ -1,4 +1,4 @@
-import { BrowserWindow, shell } from 'electron';
+import { BrowserWindow, nativeImage, shell } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../shared/config.js';
@@ -7,10 +7,13 @@ import { loadWindowState, saveWindowState } from './window-state.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** Project root (dist/main → ../../). */
+/** Project / asar root (dist/main → ../../). */
 const projectRoot = path.join(__dirname, '..', '..');
 
-const appIconPath = path.join(projectRoot, 'assets', 'icon.png');
+/** Window / taskbar icon (packaged into asar as assets/icon.png). */
+const appIcon = nativeImage.createFromPath(
+  path.join(projectRoot, 'assets', 'icon.png'),
+);
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -26,7 +29,7 @@ export function createMainWindow(initialUrl?: string | null): BrowserWindow {
     y: state.y,
     width: state.width,
     height: state.height,
-    icon: appIconPath,
+    ...(appIcon.isEmpty() ? {} : { icon: appIcon }),
     autoHideMenuBar: true,
     show: false,
     webPreferences: {
@@ -36,6 +39,12 @@ export function createMainWindow(initialUrl?: string | null): BrowserWindow {
       webSecurity: true,
     },
   });
+
+  // Ensure Linux window managers pick up the icon even when the desktop
+  // entry association is delayed (X11 / some compositors).
+  if (!appIcon.isEmpty()) {
+    mainWindow.setIcon(appIcon);
+  }
 
   // Fully hide the native menu bar (Linux still draws it if only autoHide is set).
   mainWindow.setMenuBarVisibility(false);
