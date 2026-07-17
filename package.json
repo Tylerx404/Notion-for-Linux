@@ -1,6 +1,6 @@
 {
   "name": "notion-for-linux",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Unofficial Notion desktop client for Linux",
   "productName": "Notion",
   "desktopName": "notion-for-linux",
