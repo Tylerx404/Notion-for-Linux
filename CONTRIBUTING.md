@@ -28,9 +28,35 @@ Thanks for helping improve **Notion for Linux**.
 
 ## Releases
 
-1. Bump the root `VERSION` file.
-2. `bun run version:sync && bun run version:tag`
-3. Push the branch and the tag (`vX.Y.Z`). The **Release** workflow builds packages and attaches them to the GitHub Release. Tag and `VERSION` must match.
+The release workflow checks out the **tag** and requires `VERSION` in that commit to match the tag (e.g. tag `v1.0.1` ⇒ committed `VERSION` is `1.0.1`). Tag only **after** the bump is committed.
+
+```bash
+# 1. Bump VERSION
+echo X.Y.Z > VERSION
+
+# 2. Sync package.json and commit
+bun run version:sync
+git add VERSION package.json
+git commit -m "chore: bump version to X.Y.Z"
+
+# 3. Create annotated tag (fails if tree is dirty / VERSION not committed)
+bun run version:tag
+
+# 4. Push branch + tag (tag push triggers Release workflow)
+git push origin main
+git push origin "v$(tr -d '[:space:]' < VERSION)"
+```
+
+If you tagged the wrong commit, delete the local tag, fix, and retag:
+
+```bash
+git tag -d vX.Y.Z
+# commit VERSION if needed, then:
+bun run version:tag
+git push origin vX.Y.Z
+# if the bad tag was already on remote:
+# git push origin :refs/tags/vX.Y.Z && git push origin vX.Y.Z
+```
 
 ## Ways to help
 
